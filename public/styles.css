@@ -109,6 +109,9 @@ table.models input:not([type=checkbox]) { width: 100%; }
 .filters { display: flex; gap: 8px; margin-bottom: 12px; }
 .filters input { flex: 1; }
 .approval { border-color: var(--warn); }
+.demo { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.demo p { margin: 4px 0 10px; }
+.examples { display: flex; flex-wrap: wrap; gap: 8px; }
 .approval pre { max-height: 200px; }
 
 /* Drawer */

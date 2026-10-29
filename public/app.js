@@ -107,7 +107,26 @@ $('#logout').addEventListener('click', async () => { await api('/api/logout', { 
 
 // ---- Data ----------------------------------------------------------------------------------
 
-async function loadMe() { state.me = await api('/api/me'); renderSidebar(); renderComposerOptions(); }
+async function loadMe() { state.me = await api('/api/me'); renderSidebar(); renderComposerOptions(); renderDemo(); }
+
+// On a shared demo instance commands always need approval, so the skip option is hidden.
+function renderDemo() {
+  const demo = state.me?.demo?.enabled;
+  $('#demo-banner').classList.toggle('hidden', !demo);
+  for (const id of ['#skip', '#followup-skip']) { $(id).checked = false; $(id).closest('label').classList.toggle('hidden', Boolean(demo)); }
+  if (demo) $('#demo-limit').textContent = `Up to ${state.me.demo.maxTasksPerHour} tasks per hour are shared by all visitors.`;
+}
+
+$('#demo-banner').addEventListener('click', event => {
+  const example = event.target.closest('[data-example]')?.dataset.example;
+  if (!example) return;
+  const sample = (state.me?.projects || []).find(p => p.endsWith('/sample-app'));
+  $('#project').value = example.includes('sample-app') && sample ? sample : '';
+  $('#workspace-row').classList.add('hidden');
+  $('#prompt').value = example;
+  $('#prompt').focus();
+  previewRoute();
+});
 async function loadSessions() { state.sessions = (await api('/api/sessions')).sessions; renderSessions(); }
 async function loadTasks() { state.tasks = (await api('/api/tasks')).tasks; renderTasks(); }
 async function loadModels() { const data = await api('/api/models'); state.models = data.configs; state.served = data.served; state.routerModel = data.routerModel; renderComposerOptions(); renderSettings(); }

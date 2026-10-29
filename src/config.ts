@@ -12,6 +12,7 @@ export type Config = {
   workspaceRoot: string;
   homeDir: string;
   cliHarnesses: boolean;
+  demo: { enabled: boolean; maxTasksPerHour: number; maxConcurrent: number };
   nebius: {
     baseUrl: string;
     apiKey: string;
@@ -32,6 +33,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     homeDir,
     // DISPATCH_CLI=0 runs Nebius-only: desktop CLIs are neither probed nor offered.
     cliHarnesses: env.DISPATCH_CLI !== '0',
+    // DISPATCH_DEMO=1 is for a shared public instance: commands always need approval and usage is capped.
+    demo: {
+      enabled: env.DISPATCH_DEMO === '1',
+      maxTasksPerHour: Number(env.DISPATCH_MAX_TASKS_PER_HOUR || 30),
+      maxConcurrent: Number(env.DISPATCH_MAX_CONCURRENT || 3),
+    },
     nebius: {
       baseUrl: (env.NEBIUS_BASE_URL || 'https://api.tokenfactory.nebius.com/v1').replace(/\/+$/, ''),
       apiKey: env.NEBIUS_API_KEY || env.NEBIUS_TEMP_API_KEY || '',

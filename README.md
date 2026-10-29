@@ -4,6 +4,15 @@
 
 Built for the Nebius × NVIDIA hackathon. Routing and coding both run on open models served by **Nebius Token Factory**, so it works on any machine with no desktop agent installed.
 
+## Try the live demo (judges)
+
+- **URL:** `https://YOUR-DEMO-URL` (replace before submitting)
+- **Password:** `YOUR-JUDGE-PASSWORD` (replace before submitting)
+
+Open the URL on your phone or laptop, sign in, and tap one of the example tasks, for example **Fix the failing test**. The Nebius router picks a model, the NVIDIA Nemotron agent reads the project, and every shell command waits for you to tap **Approve**. Open the task to watch each step, then send a follow-up in the same session.
+
+The demo runs in an isolated container on a Nebius VM. It holds only throwaway projects, and is capped at a few tasks per hour.
+
 ## What it does
 
 1. **You send a task** from a browser or phone: _"Add a /health endpoint and a test for it."_
@@ -75,8 +84,15 @@ Then open the tunnel's address on your phone and sign in. The first password can
 | `DISPATCH_WORKSPACES`                    | `~/Dispatch Workspaces`                   | Where new task folders are created                             |
 | `DISPATCH_CLI`                           | `1`                                       | `0` = Nebius only: do not probe or offer desktop CLIs          |
 | `DISPATCH_DATA_DIR`                      | `.dispatch-data/`                         | Settings, tasks and agent sessions (JSON)                      |
+| `DISPATCH_DEMO`                          | `0`                                       | `1` = shared demo: commands always need approval, usage capped |
+| `DISPATCH_MAX_TASKS_PER_HOUR`            | `30`                                      | Demo mode: tasks allowed per hour across all visitors          |
+| `DISPATCH_MAX_CONCURRENT`                | `3`                                       | Demo mode: tasks allowed to run at the same time               |
 
 At startup and every minute Dispatch calls `GET /v1/models`. Roster models Nebius does not serve are switched off automatically, and the router model is picked from what is actually served. Both are editable in **Settings**, which also has a **Test connection** button.
+
+## Host a public demo
+
+[docs/DEPLOY.md](docs/DEPLOY.md) puts Dispatch on a Nebius VM with HTTPS in about ten minutes using Docker Compose. Visitors only reach a container on that VM, never your own computer.
 
 ## Security
 
