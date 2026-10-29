@@ -1,5 +1,5 @@
 // Discovers conversations that desktop coding CLIs saved on this machine, so they can be
-// listed, read and continued from the browser. Adapted from server/sessions.js in Shed (MIT).
+// listed, read and continued from the browser.
 import fs from 'node:fs';
 import path from 'node:path';
 import type { Harness } from './models.ts';

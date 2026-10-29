@@ -2,7 +2,7 @@
 
 **Message your coding agents from your phone. A Nebius-hosted router agent decides where each request goes, and a built-in Nebius coding agent does the work.**
 
-Built for the Nebius × NVIDIA hackathon. It builds on the core ideas of [Shed](https://github.com/IAmUnbounded/shed) (MIT), re-implemented in TypeScript, with Shed's local Laya routing model replaced by open models on **Nebius Token Factory**, plus a new Nebius-powered coding-agent harness, so it runs on any machine with no desktop agent installed.
+Built for the Nebius × NVIDIA hackathon. Routing and coding both run on open models served by **Nebius Token Factory**, so it works on any machine with no desktop agent installed.
 
 ## What it does
 
@@ -104,14 +104,10 @@ The tests use a mock Nebius server: unit tests cover the client (retries, errors
 | `src/agent/loop.ts`, `src/agent/tools.ts` | Nebius coding agent and its sandboxed tools |
 | `src/tasks.ts` | Task lifecycle, approvals, CLI harnesses, handoff |
 | `src/nebius.ts` | Dependency-free Token Factory client |
-| `src/sessions.ts`, `src/router.ts` | Desktop session discovery and local ranking (adapted from Shed) |
+| `src/sessions.ts`, `src/router.ts` | Desktop session discovery and local ranking |
 | `src/server.ts`, `src/auth.ts` | HTTP API, SSE, sign-in |
 | `public/` | Web app (vanilla JS, mobile-first) |
 
-## Not included from the original Shed
-
-macOS Terminal automation, the Cloudflare tunnel installer, web push notifications and file previews. Desktop CLIs here run headless (`claude -p`, `codex exec`, …).
-
 ## License
 
-Apache-2.0. Portions adapted from [Shed](https://github.com/IAmUnbounded/shed), MIT License, Copyright (c) 2026 Sukhad Anand.
+Apache-2.0. Includes third-party code under the MIT License; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

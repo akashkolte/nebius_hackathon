@@ -78,7 +78,7 @@ export class Store {
     this.tasks = readJson<Task[]>(path.join(dir, 'tasks.json'), []);
     // A task that was running when the server stopped cannot be resumed; mark it so the UI is honest.
     for (const task of this.tasks) {
-      if (task.status === 'running' || task.status === 'waiting') Object.assign(task, { status: 'failed', approval: null, error: `${task.error}\nShed restarted while this task was running.`.trim() });
+      if (task.status === 'running' || task.status === 'waiting') Object.assign(task, { status: 'failed', approval: null, error: `${task.error}\nDispatch restarted while this task was running.`.trim() });
     }
     this.sessions = new Map();
     for (const name of fs.readdirSync(path.join(dir, 'agent-sessions'))) {

@@ -1,5 +1,5 @@
 // The router agent: a Nebius model decides which session or harness a request belongs to and
-// which model should run it. It replaces the local Laya model used by Shed (MIT). Every decision falls back to
+// which model should run it. Every decision falls back to
 // deterministic local matching when Nebius is unreachable, unsure, or answers with an invalid option.
 import { parseJsonObject, type NebiusClient } from './nebius.ts';
 import { chooseRoute, rankSessions } from './router.ts';
