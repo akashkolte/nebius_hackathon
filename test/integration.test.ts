@@ -26,7 +26,7 @@ test('a task goes from the phone through the Nebius router to the Nebius agent a
   // Each scenario numbers its own agent calls from 0.
   const scenario = (handler: Handler): Handler => { let calls = 0; return request => handler(request, calls++); };
   const mock = await startMockNebius({
-    models: ['moonshotai/Kimi-K2.7-Code', 'Qwen/Qwen3-30B-A3B-Instruct-2507'],
+    models: ['nvidia/Nemotron-3-Ultra-550b-a55b', 'Qwen/Qwen3-30B-A3B-Instruct-2507'],
     router: request => /best model/.test(request.messages[1].content)
       ? { content: '{"choice":"model_0","confidence":0.8,"reason":"Coding task"}' }
       : /hello\.txt/.test(request.messages[1].content) && /session_0/.test(request.messages[1].content)
@@ -83,7 +83,7 @@ test('a task goes from the phone through the Nebius router to the Nebius agent a
   // A new session on the only ready harness is the only option, so no routing call is needed.
   assert.equal(task.routeSource, 'local');
   assert.equal(task.modelSource, 'nebius');
-  assert.equal(task.model, 'moonshotai/Kimi-K2.7-Code');
+  assert.equal(task.model, 'nvidia/Nemotron-3-Ultra-550b-a55b');
   assert.match(task.cwd, /hello-txt-greets-hackathon$/);
 
   const waiting = await waitFor(task.id, ['waiting']);

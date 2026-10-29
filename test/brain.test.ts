@@ -115,3 +115,11 @@ test('model settings are validated', () => {
   assert.throws(() => validateModelConfig({ models: [{ id: 'a' }, { id: 'a' }] }), /unique/);
   assert.throws(() => validateModelConfig({ models: [{ id: 'a', enabled: false }], defaultModel: 'a' }), /enabled model/);
 });
+
+test('NVIDIA Nemotron 3 Ultra is the default agent model and the fallback when routing fails', async () => {
+  const config = defaultModelConfig('nebius');
+  assert.equal(config.defaultModel, 'nvidia/Nemotron-3-Ultra-550b-a55b');
+  const decision = await new Brain(fakeClient(['THROW']), () => 'm').decideModel('build a feature', 'nebius', config);
+  assert.deepEqual([decision.model, decision.source], ['nvidia/Nemotron-3-Ultra-550b-a55b', 'default']);
+  assert.equal(reconcileRoster(config, ['Qwen/Qwen3-30B-A3B-Instruct-2507']).defaultModel, '');
+});

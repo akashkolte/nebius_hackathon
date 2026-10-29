@@ -24,9 +24,9 @@ export const harnessDescriptions: Record<Harness, string> = {
 // Default roster for the built-in agent. Model IDs on Token Factory change over time, so the server
 // checks them against GET /v1/models at startup (see reconcileRoster) and the roster is editable in Settings.
 export const nebiusRoster: ModelEntry[] = [
-  { id: 'moonshotai/Kimi-K2.7-Code', label: 'Kimi K2.7 Code', description: 'Coding-tuned: multi-file features, refactors and hard debugging.', enabled: true },
+  { id: 'nvidia/Nemotron-3-Ultra-550b-a55b', label: 'NVIDIA Nemotron 3 Ultra', description: 'Default. Largest NVIDIA model: hard, multi-file features, refactors and debugging.', enabled: true },
   { id: 'nvidia/nemotron-3-super-120b-a12b', label: 'NVIDIA Nemotron 3 Super', description: 'Long, multi-step agentic work with many tool calls; everyday coding tasks.', enabled: true },
-  { id: 'Qwen/Qwen3-235B-A22B-Instruct-2507', label: 'Qwen3 235B', description: 'Balanced general model: explanations, moderate changes, reliable tool use.', enabled: true },
+  { id: 'moonshotai/Kimi-K2.7-Code', label: 'Kimi K2.7 Code', description: 'Coding-tuned alternative for multi-file changes.', enabled: true },
   { id: 'Qwen/Qwen3-30B-A3B-Instruct-2507', label: 'Qwen3 30B (fast)', description: 'Fast: small edits, questions about code, short scripts.', enabled: true },
 ];
 
@@ -55,7 +55,7 @@ const curated: Record<Harness, ModelEntry[]> = {
 };
 
 export function defaultModelConfig(harness: Harness): ModelConfig {
-  return { models: curated[harness].map(model => ({ ...model })), defaultModel: '' };
+  return { models: curated[harness].map(model => ({ ...model })), defaultModel: harness === 'nebius' ? nebiusRoster[0].id : '' };
 }
 
 export function modelConfig(harness: Harness, overrides: Partial<Record<Harness, ModelConfig>> = {}): ModelConfig {

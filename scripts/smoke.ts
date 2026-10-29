@@ -26,7 +26,7 @@ const brain = new Brain(client, () => routerModel);
 const decision = await brain.decideModel('Rename the variable x to count in utils.py', 'nebius', roster);
 console.log(`   → ${decision.model} (${decision.source}): ${decision.reason}${decision.fallbackReason ? ` [${decision.fallbackReason}]` : ''}`);
 
-const agentModel = config.nebius.defaultAgentModel || decision.model || roster.models.find(m => m.enabled)!.id;
+const agentModel = config.nebius.defaultAgentModel || roster.defaultModel || decision.model || roster.models.find(m => m.enabled)!.id;
 const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'shed-smoke-'));
 console.log(`\n3. Agent (${agentModel}) writes and runs a script in ${cwd}`);
 const result = await runAgent({
