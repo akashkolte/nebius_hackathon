@@ -95,7 +95,7 @@ test('the roster is reconciled with the models Nebius serves', () => {
   const config = defaultModelConfig('nebius');
   assert.deepEqual(reconcileRoster(config, []), config);
   const partial = reconcileRoster(config, [nebiusRoster[0].id]);
-  assert.deepEqual(partial.models.map(m => m.enabled), [true, false, false, false]);
+  assert.deepEqual(partial.models.map(m => m.enabled), nebiusRoster.map((_, i) => i === 0));
   const none = reconcileRoster(config, ['vendor/Some-Coder-7B', 'vendor/embedding-large']);
   assert.ok(none.models.some(m => m.id === 'vendor/Some-Coder-7B' && m.enabled));
   assert.ok(!none.models.some(m => m.id === 'vendor/embedding-large'));
@@ -103,7 +103,8 @@ test('the roster is reconciled with the models Nebius serves', () => {
 
 test('router model selection honours config, then preference, then what is served', () => {
   assert.equal(pickRouterModel('my/router', ['x'], nebiusRoster), 'my/router');
-  assert.equal(pickRouterModel('', ['moonshotai/Kimi-K2-Instruct', 'zzz'], nebiusRoster), 'moonshotai/Kimi-K2-Instruct');
+  assert.equal(pickRouterModel('', ['nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B', 'zzz'], nebiusRoster), 'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B');
+  assert.equal(pickRouterModel('', ['zzz', 'nvidia/nemotron-3-super-120b-a12b'], nebiusRoster), 'nvidia/nemotron-3-super-120b-a12b');
   assert.equal(pickRouterModel('', ['Qwen/Qwen3-235B-A22B-Instruct-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507'], nebiusRoster), 'Qwen/Qwen3-30B-A3B-Instruct-2507');
   assert.equal(pickRouterModel('', ['only/model'], nebiusRoster), 'only/model');
 });

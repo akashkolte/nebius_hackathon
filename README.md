@@ -7,9 +7,9 @@ Built for the Nebius × NVIDIA hackathon. It is a TypeScript re-implementation o
 ## What it does
 
 1. **You send a task** from a browser or phone: *"Add a /health endpoint and a test for it."*
-2. **The router agent** (a fast model on Nebius, e.g. Llama 3.3 70B) decides:
+2. **The router agent** (a fast model on Nebius, e.g. Qwen3 30B) decides:
    - whether the request continues an existing conversation or starts a new one, and in which harness;
-   - which model fits the task, from an editable roster (Qwen3 Coder 480B for hard work, NVIDIA Nemotron Super 49B for everyday tasks, Llama 3.3 70B for small edits, and so on).
+   - which model fits the task, from an editable roster (Kimi K2.7 Code for hard coding work, NVIDIA Nemotron 3 Super for multi-step agentic tasks, Qwen3 235B for balanced work, Qwen3 30B for small edits).
 3. **The Nebius coding agent** runs a tool-calling loop in the project folder: lists, reads, searches and edits files, and runs tests. **Shell commands wait for your OK** (Approve or Decline from your phone) unless you tick *Skip permissions*.
 4. **You watch it live** (server-sent events), send follow-ups with the full context kept, stop it, or **hand off** any session to another harness with its recent transcript and uncommitted git changes.
 

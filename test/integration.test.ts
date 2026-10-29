@@ -26,7 +26,7 @@ test('a task goes from the phone through the Nebius router to the Nebius agent a
   // Each scenario numbers its own agent calls from 0.
   const scenario = (handler: Handler): Handler => { let calls = 0; return request => handler(request, calls++); };
   const mock = await startMockNebius({
-    models: ['Qwen/Qwen3-Coder-480B-A35B-Instruct', 'meta-llama/Llama-3.3-70B-Instruct'],
+    models: ['moonshotai/Kimi-K2.7-Code', 'Qwen/Qwen3-30B-A3B-Instruct-2507'],
     router: request => /best model/.test(request.messages[1].content)
       ? { content: '{"choice":"model_0","confidence":0.8,"reason":"Coding task"}' }
       : /hello\.txt/.test(request.messages[1].content) && /session_0/.test(request.messages[1].content)
@@ -68,7 +68,7 @@ test('a task goes from the phone through the Nebius router to the Nebius agent a
   // Health reaches Nebius and lists the served models.
   const health = await call('/api/harness-health?force=1');
   assert.equal(health.data.harnesses.nebius.state, 'ready');
-  assert.equal((await call('/api/me')).data.routerModel, 'meta-llama/Llama-3.3-70B-Instruct');
+  assert.equal((await call('/api/me')).data.routerModel, 'Qwen/Qwen3-30B-A3B-Instruct-2507');
 
   // 1. A new task: the router picks a new Nebius session; the agent writes a file, asks to run a command, finishes.
   agent = scenario((request, index) => [
@@ -83,7 +83,7 @@ test('a task goes from the phone through the Nebius router to the Nebius agent a
   // A new session on the only ready harness is the only option, so no routing call is needed.
   assert.equal(task.routeSource, 'local');
   assert.equal(task.modelSource, 'nebius');
-  assert.equal(task.model, 'Qwen/Qwen3-Coder-480B-A35B-Instruct');
+  assert.equal(task.model, 'moonshotai/Kimi-K2.7-Code');
   assert.match(task.cwd, /hello-txt-greets-hackathon$/);
 
   const waiting = await waitFor(task.id, ['waiting']);

@@ -24,21 +24,19 @@ export const harnessDescriptions: Record<Harness, string> = {
 // Default roster for the built-in agent. Model IDs on Token Factory change over time, so the server
 // checks them against GET /v1/models at startup (see reconcileRoster) and the roster is editable in Settings.
 export const nebiusRoster: ModelEntry[] = [
-  { id: 'Qwen/Qwen3-Coder-480B-A35B-Instruct', label: 'Qwen3 Coder 480B', description: 'Strongest open coding model: multi-file features, refactors and hard debugging.', enabled: true },
-  { id: 'moonshotai/Kimi-K2-Instruct', label: 'Kimi K2', description: 'Long, multi-step agentic work with many tool calls.', enabled: true },
-  { id: 'nvidia/Llama-3_3-Nemotron-Super-49B-v1_5', label: 'NVIDIA Nemotron Super 49B', description: 'Balanced reasoning for everyday coding tasks and explanations.', enabled: true },
-  { id: 'meta-llama/Llama-3.3-70B-Instruct', label: 'Llama 3.3 70B', description: 'Fast: small edits, questions about code, short scripts.', enabled: true },
+  { id: 'moonshotai/Kimi-K2.7-Code', label: 'Kimi K2.7 Code', description: 'Coding-tuned: multi-file features, refactors and hard debugging.', enabled: true },
+  { id: 'nvidia/nemotron-3-super-120b-a12b', label: 'NVIDIA Nemotron 3 Super', description: 'Long, multi-step agentic work with many tool calls; everyday coding tasks.', enabled: true },
+  { id: 'Qwen/Qwen3-235B-A22B-Instruct-2507', label: 'Qwen3 235B', description: 'Balanced general model: explanations, moderate changes, reliable tool use.', enabled: true },
+  { id: 'Qwen/Qwen3-30B-A3B-Instruct-2507', label: 'Qwen3 30B (fast)', description: 'Fast: small edits, questions about code, short scripts.', enabled: true },
 ];
 
 // The router answers one short JSON question per request, so a fast instruct model is preferred.
+// Non-reasoning instruct models answer JSON directly instead of spending tokens thinking first.
 export const routerPreference = [
-  'meta-llama/Llama-3.3-70B-Instruct',
-  'meta-llama/Llama-3.3-70B-Instruct-fast',
   'Qwen/Qwen3-30B-A3B-Instruct-2507',
   'Qwen/Qwen3-235B-A22B-Instruct-2507',
-  'nvidia/Llama-3_3-Nemotron-Super-49B-v1_5',
-  'moonshotai/Kimi-K2-Instruct',
-  'Qwen/Qwen3-Coder-480B-A35B-Instruct',
+  'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B',
+  'meta-llama/Llama-3.3-70B-Instruct',
 ];
 
 const curated: Record<Harness, ModelEntry[]> = {
