@@ -8,80 +8,34 @@ Built for the Nebius × NVIDIA hackathon. Routing and coding both run on open mo
 
 You run Dispatch on your own computer with your own Nebius API key. Then you send it coding tasks from a browser, or from your phone.
 
-### What you need
+### One-time setup
 
-- **macOS or Linux.** On Windows, use WSL or the Docker option below.
-- **Node.js 22.18 or later** (`node --version`), **git** and **Python 3** (the sample project's tests use it).
-- **A Nebius Token Factory API key.** Create one in the Nebius Token Factory console. One task typically uses a few thousand tokens.
-
-### 1. Get the code and install
+You need a **Nebius Token Factory API key** (create one in the Nebius Token Factory console; one task typically uses a few thousand tokens) and **git**.
 
 ```bash
-git clone https://github.com/akashkolte/nebius_hackathon.git
+git clone https://github.com/akashkolte/nebius_hackathon.git && cd nebius_hackathon
 ```
-
-```bash
-cd nebius_hackathon && npm install
-```
-
-### 2. Add your API key and password
 
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` in any editor and fill in two lines:
+Open `.env` in any editor and fill in two lines. The password must be at least 8 characters; you'll sign in with it.
 
 ```
 NEBIUS_API_KEY=your-nebius-api-key
 DISPATCH_PASSWORD=a-password-you-choose
 ```
 
-The password must be at least 8 characters; you'll sign in with it in step 4. The file also turns on **demo mode** (`DISPATCH_DEMO=1`), which:
+`.env` stays on your computer and is never committed. It also turns on **demo mode**, which:
 
-- creates a small `sample-app` project with one failing test, in `~/Dispatch Workspaces/`;
+- adds a small `sample-app` project with one failing test;
 - shows example tasks on the home screen;
 - makes every shell command wait for your approval.
 
-`DISPATCH_CLI=0` keeps any Claude Code or Codex sessions on your computer out of the demo. `.env` stays on your computer: it is never committed.
+### Option A: Docker (recommended, 2 commands)
 
-Optional: check the key and models end to end, about a minute. It lists the models your key can use, asks the router a question, and has the agent write and run a small script in a temporary folder. It ends with `✓ Smoke test passed`.
-
-```bash
-npm run smoke
-```
-
-### 3. Start Dispatch
-
-```bash
-npm start
-```
-
-It prints `Dispatch is running at http://127.0.0.1:4378` and `nebius ready`. If it says the Nebius key is missing or invalid, check `NEBIUS_API_KEY` in `.env`.
-
-### 4. Try it
-
-1. Open **http://localhost:4378** and sign in with the password from `.env`.
-2. Tap the example task **Fix the failing test**, then **Start**.
-3. Watch the steps:
-   - The Nebius router picks a model.
-   - The NVIDIA Nemotron agent reads the code and edits the bug.
-   - The agent asks to run the tests; tap **Approve**.
-4. When it's done, check the **Activity** tab (route, model, token use) and the **Changes** tab, or send a follow-up such as _"Now add a test for complete()"_. Settings → **Test connection** shows the Nebius endpoint and the router model.
-
-### 5. Optional: use it from your phone
-
-In a second terminal, put an HTTPS tunnel in front of Dispatch (needs [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)):
-
-```bash
-cloudflared tunnel --url http://localhost:4378
-```
-
-Open the `https://….trycloudflare.com` address it prints on your phone, and sign in with the same password.
-
-### Alternative: Docker
-
-No Node.js needed. Create `.env` as in step 2, then run from the repo folder:
+Needs [Docker Desktop](https://www.docker.com/products/docker-desktop/) (macOS, Windows or Linux), and nothing else.
 
 ```bash
 docker build -t dispatch .
@@ -91,11 +45,50 @@ docker build -t dispatch .
 docker run --rm -p 4378:4378 --env-file .env dispatch
 ```
 
-Then open http://localhost:4378 and sign in with the password from `.env`.
+When the startup log lists `nebius` as `ready`, open **http://localhost:4378**, sign in with the password from `.env`, and go to [What to try](#what-to-try). Everything the agent does stays inside the container, and is deleted when you stop it with Ctrl+C.
 
-### Clean up
+### Use it from your phone (optional, works with either option)
 
-Stop Dispatch with Ctrl+C, then delete the `~/Dispatch Workspaces` folder and the repo folder.
+While Dispatch is running, open a second terminal and put an HTTPS tunnel in front of it. This needs [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/); on macOS, `brew install cloudflared`.
+
+```bash
+cloudflared tunnel --url http://localhost:4378
+```
+
+Open the `https://….trycloudflare.com` address it prints on your phone, and sign in with the same password.
+
+### Option B: Node.js (without Docker)
+
+Needs macOS or Linux (on Windows, use WSL), **Node.js 22.18 or later** (`node --version`) and **Python 3**, which the sample project's tests use. Run these in the repo folder:
+
+```bash
+npm install
+```
+
+```bash
+npm start
+```
+
+When the startup log lists `nebius` as `ready`, open **http://localhost:4378** and sign in with the password from `.env`. The sample project is created in `~/Dispatch Workspaces/`. `DISPATCH_CLI=0` in `.env` keeps any Claude Code or Codex sessions on your computer out of the demo.
+
+Optional: check the key and models end to end, in about a minute. This lists the models your key can use, asks the router a question, and has the agent write and run a small script in a temporary folder. It ends with `✓ Smoke test passed`.
+
+```bash
+npm run smoke
+```
+
+### What to try
+
+1. Tap the example task **Fix the failing test**, then **Start**.
+2. Watch the steps:
+   - The Nebius router picks a model.
+   - The NVIDIA Nemotron agent reads the code and edits the bug.
+   - The agent asks to run the tests; tap **Approve**.
+3. When it's done, check the **Activity** tab (route, model, token use) and the **Changes** tab.
+4. Send a follow-up in the same session, such as _"Now add a test for complete()"_.
+5. Settings → **Test connection** shows the Nebius endpoint and the router model.
+
+If Dispatch says the Nebius key is missing or invalid, check `NEBIUS_API_KEY` in `.env` and start it again.
 
 ## What it does
 
@@ -211,3 +204,12 @@ The tests use a mock Nebius server: unit tests cover the client (retries, errors
 ## License
 
 This project is licensed under the Apache License 2.0 License. See [LICENSE](LICENSE) for details.
+
+## Clean up
+
+Stop Dispatch with Ctrl+C. Then:
+
+- **Docker:** remove the image with `docker rmi dispatch`. The container's files were already deleted when it stopped.
+- **Node.js:** delete the `~/Dispatch Workspaces` folder.
+
+Finally, delete the repo folder.
