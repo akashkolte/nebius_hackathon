@@ -119,7 +119,8 @@ function upsertTask(summary) {
 
 function connectEvents() {
   const source = new EventSource('/api/events');
-  source.onopen = () => $('#live-dot').classList.remove('off');
+  // After a reconnect (phone locked, network switch) catch up on whatever was missed.
+  source.onopen = () => { $('#live-dot').classList.remove('off'); syncNow(); };
   source.onerror = () => $('#live-dot').classList.add('off');
   source.addEventListener('task', event => {
     const task = JSON.parse(event.data);
@@ -130,6 +131,20 @@ function connectEvents() {
     if (state.drawer && (state.drawer.sessionId === task.sessionId || state.drawer.taskId === task.id)) refreshDrawer();
   });
   source.addEventListener('sessions', () => loadSessions().catch(() => {}));
+}
+
+const liveTasks = () => state.tasks.filter(t => t.status === 'running' || t.status === 'waiting').length;
+
+async function syncNow() {
+  await loadTasks().catch(() => {});
+  if (state.drawer) refreshDrawer();
+}
+
+// Polling backs up the event stream, which some tunnels buffer and phones drop when they sleep:
+// every 3 s while an agent is working, every 15 s otherwise.
+async function pollLoop() {
+  await syncNow();
+  setTimeout(pollLoop, liveTasks() ? 3000 : 15000);
 }
 
 // ---- Rendering: sidebar & lists ------------------------------------------------------------
@@ -494,8 +509,10 @@ async function start() {
   started = true;
   await Promise.all([loadMe(), loadModels(), loadSessions(), loadTasks()]);
   connectEvents();
-  // Safety net for missed events and for health that settles after startup.
-  setInterval(() => { loadTasks().catch(() => {}); loadMe().catch(() => {}); }, 15000);
+  setTimeout(pollLoop, 3000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { syncNow(); loadSessions().catch(() => {}); } });
+  // Health settles after startup; keep the sidebar current.
+  setInterval(() => { loadMe().catch(() => {}); }, 15000);
   setInterval(() => { loadSessions().catch(() => {}); }, 30000);
 }
 

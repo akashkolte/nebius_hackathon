@@ -157,8 +157,10 @@ export function createApp(config: Config, options: { fetchImpl?: typeof fetch; i
     }
 
     if (pathname === '/api/events' && method === 'GET') {
-      res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-store', connection: 'keep-alive', ...SECURITY_HEADERS });
-      res.write(': connected\n\n');
+      // Tunnels and reverse proxies may buffer or compress a stream; these headers and the padding ask them not to.
+      res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache, no-transform', 'x-accel-buffering': 'no', connection: 'keep-alive', ...SECURITY_HEADERS });
+      res.flushHeaders();
+      res.write(`retry: 3000\n: ${' '.repeat(2048)}\n\n`);
       eventClients.add(res);
       req.on('close', () => eventClients.delete(res));
       return;
