@@ -6,11 +6,11 @@ Built for the Nebius × NVIDIA hackathon. Routing and coding both run on open mo
 
 ## What it does
 
-1. **You send a task** from a browser or phone: *"Add a /health endpoint and a test for it."*
+1. **You send a task** from a browser or phone: _"Add a /health endpoint and a test for it."_
 2. **The router agent** (a fast model on Nebius, e.g. Qwen3 30B) decides:
    - whether the request continues an existing conversation or starts a new one, and in which harness;
    - which model fits the task, from an editable roster (NVIDIA Nemotron 3 Ultra by default, Nemotron 3 Super for multi-step agentic tasks, Kimi K2.7 Code as a coding alternative, Qwen3 30B for small edits).
-3. **The Nebius coding agent** runs a tool-calling loop in the project folder: lists, reads, searches and edits files, and runs tests. **Shell commands wait for your OK** (Approve or Decline from your phone) unless you tick *Skip permissions*.
+3. **The Nebius coding agent** runs a tool-calling loop in the project folder: lists, reads, searches and edits files, and runs tests. **Shell commands wait for your OK** (Approve or Decline from your phone) unless you tick _Skip permissions_.
 4. **You watch it live** (server-sent events), send follow-ups with the full context kept, stop it, or **hand off** any session to another harness with its recent transcript and uncommitted git changes.
 
 It also finds your existing **Claude Code, Codex and Gemini CLI** sessions on the machine, so you can read them, continue them headlessly, or hand them off to the Nebius agent.
@@ -63,18 +63,18 @@ Then open the tunnel's address on your phone and sign in. The first password can
 
 ## Configuration
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `NEBIUS_API_KEY` / `NEBIUS_TEMP_API_KEY` | – | Nebius Token Factory API key |
-| `NEBIUS_BASE_URL` | `https://api.tokenfactory.nebius.com/v1` | OpenAI-compatible endpoint |
-| `NEBIUS_ROUTER_MODEL` | first served model from a preference list | Model for routing decisions |
-| `NEBIUS_AGENT_MODEL` | – | Extra model added to the top of the agent roster |
-| `PORT` / `HOST` | `4378` / `127.0.0.1` | Listen address (`DISPATCH_LAN=1` listens on all interfaces) |
-| `DISPATCH_PASSWORD` | – | Set the password at startup (headless servers) |
-| `DISPATCH_PROJECTS` | – | Colon-separated extra project folders to offer in the composer |
-| `DISPATCH_WORKSPACES` | `~/Dispatch Workspaces` | Where new task folders are created |
-| `DISPATCH_CLI` | `1` | `0` = Nebius only: do not probe or offer desktop CLIs |
-| `DISPATCH_DATA_DIR` | `.dispatch-data/` | Settings, tasks and agent sessions (JSON) |
+| Variable                                 | Default                                   | Purpose                                                        |
+| ---------------------------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| `NEBIUS_API_KEY` / `NEBIUS_TEMP_API_KEY` | –                                         | Nebius Token Factory API key                                   |
+| `NEBIUS_BASE_URL`                        | `https://api.tokenfactory.nebius.com/v1`  | OpenAI-compatible endpoint                                     |
+| `NEBIUS_ROUTER_MODEL`                    | first served model from a preference list | Model for routing decisions                                    |
+| `NEBIUS_AGENT_MODEL`                     | –                                         | Extra model added to the top of the agent roster               |
+| `PORT` / `HOST`                          | `4378` / `127.0.0.1`                      | Listen address (`DISPATCH_LAN=1` listens on all interfaces)    |
+| `DISPATCH_PASSWORD`                      | –                                         | Set the password at startup (headless servers)                 |
+| `DISPATCH_PROJECTS`                      | –                                         | Colon-separated extra project folders to offer in the composer |
+| `DISPATCH_WORKSPACES`                    | `~/Dispatch Workspaces`                   | Where new task folders are created                             |
+| `DISPATCH_CLI`                           | `1`                                       | `0` = Nebius only: do not probe or offer desktop CLIs          |
+| `DISPATCH_DATA_DIR`                      | `.dispatch-data/`                         | Settings, tasks and agent sessions (JSON)                      |
 
 At startup and every minute Dispatch calls `GET /v1/models`. Roster models Nebius does not serve are switched off automatically, and the router model is picked from what is actually served. Both are editable in **Settings**, which also has a **Test connection** button.
 
@@ -84,7 +84,7 @@ Anyone who can sign in can make an agent run code on this machine, so:
 
 - The first password can only be set from the machine itself (loopback, no proxy headers). Passwords are stored as scrypt hashes and each browser gets its own random session key, stored only as a hash.
 - Sign-in attempts are rate-limited, cookies are `HttpOnly; SameSite=Strict`, cross-origin POSTs are refused, and a strict Content-Security-Policy blocks framing and third-party scripts.
-- Agent file tools cannot leave the project folder, symlinks included. Shell commands need approval unless you choose *Skip permissions*.
+- Agent file tools cannot leave the project folder, symlinks included. Shell commands need approval unless you choose _Skip permissions_.
 
 ## Develop
 
@@ -98,16 +98,16 @@ npm run typecheck
 
 The tests use a mock Nebius server: unit tests cover the client (retries, errors, JSON and text tool calls), the router (Nebius decisions and every fallback), tools (sandboxing, edits, approvals, timeouts) and model rosters. An end-to-end test drives the real HTTP server through sign-in, routing, the agent loop, approvals, follow-ups, cancellation and a Claude Code → Nebius handoff.
 
-| Path | What it is |
-| --- | --- |
-| `src/brain.ts` | Router agent: session/harness and model decisions on Nebius, with local fallback |
-| `src/agent/loop.ts`, `src/agent/tools.ts` | Nebius coding agent and its sandboxed tools |
-| `src/tasks.ts` | Task lifecycle, approvals, CLI harnesses, handoff |
-| `src/nebius.ts` | Dependency-free Token Factory client |
-| `src/sessions.ts`, `src/router.ts` | Desktop session discovery and local ranking |
-| `src/server.ts`, `src/auth.ts` | HTTP API, SSE, sign-in |
-| `public/` | Web app (vanilla JS, mobile-first) |
+| Path                                      | What it is                                                                       |
+| ----------------------------------------- | -------------------------------------------------------------------------------- |
+| `src/brain.ts`                            | Router agent: session/harness and model decisions on Nebius, with local fallback |
+| `src/agent/loop.ts`, `src/agent/tools.ts` | Nebius coding agent and its sandboxed tools                                      |
+| `src/tasks.ts`                            | Task lifecycle, approvals, CLI harnesses, handoff                                |
+| `src/nebius.ts`                           | Dependency-free Token Factory client                                             |
+| `src/sessions.ts`, `src/router.ts`        | Desktop session discovery and local ranking                                      |
+| `src/server.ts`, `src/auth.ts`            | HTTP API, SSE, sign-in                                                           |
+| `public/`                                 | Web app (vanilla JS, mobile-first)                                               |
 
 ## License
 
-Apache-2.0. Includes third-party code under the MIT License; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+This project is licensed under the Apache License 2.0 License. See [LICENSE](LICENSE) for details.
