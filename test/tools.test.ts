@@ -7,7 +7,7 @@ import { resolveInside, runTool, type ToolContext } from '../src/agent/tools.ts'
 import { compactHistory } from '../src/agent/loop.ts';
 
 function project(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'shed-tools-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dispatch-tools-'));
   fs.writeFileSync(path.join(dir, 'app.js'), 'const a = 1;\nconst b = 2;\nconst a2 = 1;\n');
   fs.mkdirSync(path.join(dir, 'src'));
   fs.writeFileSync(path.join(dir, 'src', 'util.js'), 'export function add(x, y) { return x + y; }\n');
@@ -57,7 +57,7 @@ test('run_command asks first, honours a decline, and reports exit codes', async 
   assert.equal(declined.isError, true);
   assert.equal(fs.existsSync(path.join(dir, 'should-not-exist')), false);
   const ok = await runTool('run_command', JSON.stringify({ command: 'echo hi && pwd' }), ctx(dir));
-  assert.match(ok.output, /hi\n.*shed-tools-/);
+  assert.match(ok.output, /hi\n.*dispatch-tools-/);
   assert.match(ok.output, /\[exit code 0\]/);
   const failed = await runTool('run_command', JSON.stringify({ command: 'exit 3' }), ctx(dir));
   assert.equal(failed.isError, true);

@@ -5,7 +5,7 @@ import type http from 'node:http';
 import type { Store, Device } from './store.ts';
 
 const SESSION_IDLE_MS = 30 * 24 * 3600 * 1000;
-const COOKIE = 'shed_session';
+const COOKIE = 'dispatch_session';
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 const PROXY_HEADERS = ['cf-connecting-ip', 'x-forwarded-for', 'x-real-ip', 'forwarded'];
 const sha256 = (value: string) => crypto.createHash('sha256').update(value).digest('hex');
@@ -44,7 +44,7 @@ export class Auth {
   constructor(store: Store, initialPassword = '') {
     this.store = store;
     if (initialPassword && !this.configured) {
-      if (initialPassword.length < 8) throw new Error('SHED_PASSWORD must be at least 8 characters.');
+      if (initialPassword.length < 8) throw new Error('DISPATCH_PASSWORD must be at least 8 characters.');
       store.settings.passwordHash = hashPassword(initialPassword);
       store.saveSettings();
     }

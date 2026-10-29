@@ -1,8 +1,8 @@
-# Shed on Nebius
+# Dispatch on Nebius
 
 **Message your coding agents from your phone. A Nebius-hosted router agent decides where each request goes, and a built-in Nebius coding agent does the work.**
 
-Built for the Nebius × NVIDIA hackathon. It is a TypeScript re-implementation of the core of [Shed](https://github.com/IAmUnbounded/shed) (MIT) with its local Laya routing model replaced by open models on **Nebius Token Factory**, plus a new Nebius-powered coding-agent harness, so it runs on any machine with no desktop agent installed.
+Built for the Nebius × NVIDIA hackathon. It builds on the core ideas of [Shed](https://github.com/IAmUnbounded/shed) (MIT), re-implemented in TypeScript, with Shed's local Laya routing model replaced by open models on **Nebius Token Factory**, plus a new Nebius-powered coding-agent harness, so it runs on any machine with no desktop agent installed.
 
 ## What it does
 
@@ -16,7 +16,7 @@ Built for the Nebius × NVIDIA hackathon. It is a TypeScript re-implementation o
 It also finds your existing **Claude Code, Codex and Gemini CLI** sessions on the machine, so you can read them, continue them headlessly, or hand them off to the Nebius agent.
 
 ```
- phone / browser ──HTTPS──▶ Shed server (Node 22, TypeScript)
+ phone / browser ──HTTPS──▶ Dispatch server (Node 22, TypeScript)
                               │
                               ├─ Router agent ──▶ Nebius Token Factory  (route + model choice, JSON)
                               │     └─ falls back to local word matching if Nebius is slow, unsure or down
@@ -43,7 +43,7 @@ export NEBIUS_API_KEY=your-key   # NEBIUS_TEMP_API_KEY also works
 npm start
 ```
 
-Open http://localhost:4378, set a password, and type a task. New tasks get their own folder under `~/Shed Workspaces` unless you pick a project.
+Open http://localhost:4378, set a password, and type a task. New tasks get their own folder under `~/Dispatch Workspaces` unless you pick a project.
 
 Check your key and the models end to end (lists models, asks the router, has the agent write and run a script in a temp folder):
 
@@ -53,7 +53,7 @@ npm run smoke
 
 ### Use it from your phone
 
-Shed listens on localhost only. To reach it from a phone, put any HTTPS tunnel in front of it, for example:
+Dispatch listens on localhost only. To reach it from a phone, put any HTTPS tunnel in front of it, for example:
 
 ```bash
 cloudflared tunnel --url http://localhost:4378
@@ -69,14 +69,14 @@ Then open the tunnel's address on your phone and sign in. The first password can
 | `NEBIUS_BASE_URL` | `https://api.tokenfactory.nebius.com/v1` | OpenAI-compatible endpoint |
 | `NEBIUS_ROUTER_MODEL` | first served model from a preference list | Model for routing decisions |
 | `NEBIUS_AGENT_MODEL` | – | Extra model added to the top of the agent roster |
-| `PORT` / `HOST` | `4378` / `127.0.0.1` | Listen address (`SHED_LAN=1` listens on all interfaces) |
-| `SHED_PASSWORD` | – | Set the password at startup (headless servers) |
-| `SHED_PROJECTS` | – | Colon-separated extra project folders to offer in the composer |
-| `SHED_WORKSPACES` | `~/Shed Workspaces` | Where new task folders are created |
-| `SHED_CLI` | `1` | `0` = Nebius only: do not probe or offer desktop CLIs |
-| `SHED_DATA_DIR` | `.shed-data/` | Settings, tasks and agent sessions (JSON) |
+| `PORT` / `HOST` | `4378` / `127.0.0.1` | Listen address (`DISPATCH_LAN=1` listens on all interfaces) |
+| `DISPATCH_PASSWORD` | – | Set the password at startup (headless servers) |
+| `DISPATCH_PROJECTS` | – | Colon-separated extra project folders to offer in the composer |
+| `DISPATCH_WORKSPACES` | `~/Dispatch Workspaces` | Where new task folders are created |
+| `DISPATCH_CLI` | `1` | `0` = Nebius only: do not probe or offer desktop CLIs |
+| `DISPATCH_DATA_DIR` | `.dispatch-data/` | Settings, tasks and agent sessions (JSON) |
 
-At startup and every minute Shed calls `GET /v1/models`. Roster models Nebius does not serve are switched off automatically, and the router model is picked from what is actually served. Both are editable in **Settings**, which also has a **Test connection** button.
+At startup and every minute Dispatch calls `GET /v1/models`. Roster models Nebius does not serve are switched off automatically, and the router model is picked from what is actually served. Both are editable in **Settings**, which also has a **Test connection** button.
 
 ## Security
 

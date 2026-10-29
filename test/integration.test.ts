@@ -9,7 +9,7 @@ import { loadConfig } from '../src/config.ts';
 import { createApp } from '../src/server.ts';
 import { startMockNebius, type Handler, type MockRequest } from './mock-nebius.ts';
 
-const tmp = (name: string) => fs.mkdtempSync(path.join(os.tmpdir(), `shed-${name}-`));
+const tmp = (name: string) => fs.mkdtempSync(path.join(os.tmpdir(), `dispatch-${name}-`));
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 test('a task goes from the phone through the Nebius router to the Nebius agent and back', async t => {
@@ -34,7 +34,7 @@ test('a task goes from the phone through the Nebius router to the Nebius agent a
       : { content: '{"choice":"new_nebius","confidence":0.9,"reason":"Fresh project"}' },
     agent: (request, index) => agent(request, index),
   });
-  const config = loadConfig({ SHED_HOME_DIR: home, SHED_DATA_DIR: tmp('data'), SHED_WORKSPACES: tmp('workspaces'), NEBIUS_BASE_URL: mock.url, NEBIUS_API_KEY: 'test-key', SHED_CLI: '0' });
+  const config = loadConfig({ DISPATCH_HOME_DIR: home, DISPATCH_DATA_DIR: tmp('data'), DISPATCH_WORKSPACES: tmp('workspaces'), NEBIUS_BASE_URL: mock.url, NEBIUS_API_KEY: 'test-key', DISPATCH_CLI: '0' });
   const { server, manager } = createApp(config, { initialPassword: '' });
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
@@ -167,7 +167,7 @@ test('a task goes from the phone through the Nebius router to the Nebius agent a
 });
 
 test('when Nebius is unreachable, routing falls back locally and the task fails with a clear reason', async t => {
-  const config = loadConfig({ SHED_HOME_DIR: tmp('home'), SHED_DATA_DIR: tmp('data'), SHED_WORKSPACES: tmp('workspaces'), NEBIUS_BASE_URL: 'http://127.0.0.1:9/v1', NEBIUS_API_KEY: 'k', SHED_CLI: '0' });
+  const config = loadConfig({ DISPATCH_HOME_DIR: tmp('home'), DISPATCH_DATA_DIR: tmp('data'), DISPATCH_WORKSPACES: tmp('workspaces'), NEBIUS_BASE_URL: 'http://127.0.0.1:9/v1', NEBIUS_API_KEY: 'k', DISPATCH_CLI: '0' });
   const { server, manager, health } = createApp(config, { initialPassword: '' });
   manager.client.retries = 0;
   t.after(() => new Promise(resolve => server.close(resolve)));

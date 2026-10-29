@@ -9,7 +9,7 @@ export type ApprovalRequest = { tool: string; summary: string; detail: string };
 export type ToolContext = { cwd: string; signal: AbortSignal; approve: (request: ApprovalRequest) => Promise<boolean> };
 export type ToolResult = { output: string; summary: string; isError?: boolean };
 
-const SKIP_DIRS = new Set(['.git', 'node_modules', '.venv', 'venv', '__pycache__', 'dist', 'build', '.next', '.cache', 'target', '.shed-data']);
+const SKIP_DIRS = new Set(['.git', 'node_modules', '.venv', 'venv', '__pycache__', 'dist', 'build', '.next', '.cache', 'target', '.dispatch-data']);
 const MAX_OUTPUT = 20_000;
 
 const fn = (name: string, description: string, properties: Record<string, unknown>, required: string[] = []): ToolSpec =>

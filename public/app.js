@@ -1,4 +1,4 @@
-// Shed web app: plain ES modules, no build step. Talks to the JSON API in src/server.ts.
+// Dispatch web app: plain ES modules, no build step. Talks to the JSON API in src/server.ts.
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 
@@ -83,7 +83,7 @@ async function showAuth() {
   $('#auth-confirm').required = authMode === 'setup';
   $('#auth-submit').textContent = authMode === 'setup' ? 'Set password' : 'Sign in';
   $('#auth-copy').textContent = authMode === 'setup' ? 'Choose a password (8+ characters). You will use it to sign in from your phone.'
-    : status.configured ? 'Sign in to message your coding agents.' : 'Open Shed on the machine it runs on (http://localhost) to set the first password.';
+    : status.configured ? 'Sign in to message your coding agents.' : 'Open Dispatch on the machine it runs on (http://localhost) to set the first password.';
   $('#auth-password').autocomplete = authMode === 'setup' ? 'new-password' : 'current-password';
   $('#auth-password').focus();
 }
@@ -335,7 +335,7 @@ function renderDrawer(resetControls) {
       <dt>Model</dt><dd>${escapeHtml(task.model || 'harness default')} — ${escapeHtml(task.modelReason)}${task.modelFallbackReason ? `<br><small>${escapeHtml(task.modelFallbackReason)}</small>` : ''}</dd>
       ${task.usage ? `<dt>Tokens</dt><dd>${task.usage.prompt_tokens.toLocaleString()} in · ${task.usage.completion_tokens.toLocaleString()} out</dd>` : ''}
     </dl>
-    <ol class="events">${task.events.map(e => `<li class="${e.kind}"><time>${new Date(e.at).toLocaleTimeString()}</time><span>${escapeHtml(e.text.slice(0, 600))}</span></li>`).join('')}</ol>` : '<p class="empty">No task has run in this session from Shed yet.</p>';
+    <ol class="events">${task.events.map(e => `<li class="${e.kind}"><time>${new Date(e.at).toLocaleTimeString()}</time><span>${escapeHtml(e.text.slice(0, 600))}</span></li>`).join('')}</ol>` : '<p class="empty">No task has run in this session from Dispatch yet.</p>';
 
   if (resetControls) {
     const ready = Object.keys(state.me?.harnesses || {}).filter(h => harnessReady(h) && h !== harness);
@@ -499,6 +499,6 @@ async function start() {
   setInterval(() => { loadSessions().catch(() => {}); }, 30000);
 }
 
-if (!window.__SHED_TEST__) {
+if (!window.__DISPATCH_TEST__) {
   fetch('/api/auth/status').then(r => r.json()).then(status => status.signedIn ? start() : showAuth()).catch(showAuth);
 }

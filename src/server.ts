@@ -45,7 +45,7 @@ export function createApp(config: Config, options: { fetchImpl?: typeof fetch; i
   const client = new NebiusClient({ baseUrl: config.nebius.baseUrl, apiKey: config.nebius.apiKey, fetchImpl: options.fetchImpl });
   const health = new HealthMonitor(client, { probeClis: config.cliHarnesses });
   const manager = new TaskManager({ config, store, client, health });
-  const auth = new Auth(store, options.initialPassword ?? process.env.SHED_PASSWORD ?? '');
+  const auth = new Auth(store, options.initialPassword ?? process.env.DISPATCH_PASSWORD ?? '');
   const eventClients = new Set<http.ServerResponse>();
 
   const broadcast = (event: string, data: unknown) => {

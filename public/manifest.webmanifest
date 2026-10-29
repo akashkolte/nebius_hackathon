@@ -1,6 +1,6 @@
 {
-  "name": "Shed",
-  "short_name": "Shed",
+  "name": "Dispatch",
+  "short_name": "Dispatch",
   "description": "Message your coding agents from your phone. Routed and powered by Nebius.",
   "start_url": "/",
   "display": "standalone",

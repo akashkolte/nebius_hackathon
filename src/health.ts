@@ -79,7 +79,7 @@ export class HealthMonitor {
   async refresh(force = false): Promise<Record<Harness, HarnessHealth>> {
     if (this.pending) return this.pending;
     if (!force && Date.now() - this.checkedAt < 60000) return this.snapshot;
-    this.pending = Promise.all(harnesses.map(async name => [name, name === 'nebius' ? await this.probeNebius() : this.probeClis ? await probeCli(name) : result(false, 'offline', 'Desktop CLIs are turned off (SHED_CLI=0)')] as const))
+    this.pending = Promise.all(harnesses.map(async name => [name, name === 'nebius' ? await this.probeNebius() : this.probeClis ? await probeCli(name) : result(false, 'offline', 'Desktop CLIs are turned off (DISPATCH_CLI=0)')] as const))
       .then(rows => {
         this.snapshot = Object.fromEntries(rows) as Record<Harness, HarnessHealth>;
         this.checkedAt = Date.now();

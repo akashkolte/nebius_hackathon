@@ -1,5 +1,5 @@
 // The router agent: a Nebius model decides which session or harness a request belongs to and
-// which model should run it. It replaces Shed's local Laya model. Every decision falls back to
+// which model should run it. It replaces the local Laya model used by Shed (MIT). Every decision falls back to
 // deterministic local matching when Nebius is unreachable, unsure, or answers with an invalid option.
 import { parseJsonObject, type NebiusClient } from './nebius.ts';
 import { chooseRoute, rankSessions } from './router.ts';
@@ -37,7 +37,7 @@ export class Brain {
       temperature: 0,
       maxTokens: 300,
       messages: [
-        { role: 'system', content: 'You are the routing brain of Shed, a task plane for coding agents. You pick exactly one option for each request. Reply with only a JSON object: {"choice": "<one option key>", "confidence": <number from 0 to 1>, "reason": "<at most 15 words>"}.' },
+        { role: 'system', content: 'You are the routing brain of Dispatch, a task plane for coding agents. You pick exactly one option for each request. Reply with only a JSON object: {"choice": "<one option key>", "confidence": <number from 0 to 1>, "reason": "<at most 15 words>"}.' },
         { role: 'user', content: `${question}\n\nContext:\n${JSON.stringify(context, null, 1)}\n\nOptions:\n${Object.entries(options).map(([key, text]) => `- ${key}: ${text}`).join('\n')}` },
       ],
     });

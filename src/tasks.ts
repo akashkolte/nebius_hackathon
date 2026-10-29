@@ -72,7 +72,7 @@ export class TaskManager extends EventEmitter {
   // ---- Sessions -----------------------------------------------------------------------------
 
   agentSessionRecord(s: AgentSession): Session {
-    return { id: `nebius:${s.id}`, nativeId: s.id, harness: 'nebius', title: s.title, lastPrompt: s.lastPrompt, cwd: s.cwd, currentModel: s.model, updatedAt: s.updatedAt, file: null, source: 'shed', liveState: 'history' };
+    return { id: `nebius:${s.id}`, nativeId: s.id, harness: 'nebius', title: s.title, lastPrompt: s.lastPrompt, cwd: s.cwd, currentModel: s.model, updatedAt: s.updatedAt, file: null, source: 'dispatch', liveState: 'history' };
   }
 
   sessions(force = false): Session[] {
@@ -94,9 +94,9 @@ export class TaskManager extends EventEmitter {
     return desktopMessages(session);
   }
 
-  // Folders a request may target: known session projects, workspaces Shed created, and SHED_PROJECTS.
+  // Folders a request may target: known session projects, workspaces Dispatch created, and DISPATCH_PROJECTS.
   projects(): string[] {
-    const fromEnv = String(process.env.SHED_PROJECTS || '').split(':').filter(Boolean).map(p => path.resolve(p));
+    const fromEnv = String(process.env.DISPATCH_PROJECTS || '').split(':').filter(Boolean).map(p => path.resolve(p));
     let workspaces: string[] = [];
     try { workspaces = fs.readdirSync(this.config.workspaceRoot, { withFileTypes: true }).filter(e => e.isDirectory() && !e.name.startsWith('.')).map(e => path.join(this.config.workspaceRoot, e.name)); } catch {}
     const all = [...fromEnv, ...this.sessions().map(s => s.cwd), ...workspaces].filter(p => p && fs.existsSync(p) && fs.statSync(p).isDirectory());
@@ -131,7 +131,7 @@ export class TaskManager extends EventEmitter {
     let cwd = '';
     if (input.cwd) {
       const requested = path.resolve(input.cwd);
-      if (!this.projects().includes(requested)) throw httpError('That project folder is not one Shed knows about.');
+      if (!this.projects().includes(requested)) throw httpError('That project folder is not one Dispatch knows about.');
       cwd = requested;
     }
     if (input.newWorkspace) {

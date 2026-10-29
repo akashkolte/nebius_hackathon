@@ -5,7 +5,7 @@ const config = loadConfig();
 const { server, health, store } = createApp(config);
 
 server.listen(config.port, config.host, () => {
-  console.log(`Shed is running at http://${config.host === '0.0.0.0' ? 'localhost' : config.host}:${config.port}`);
+  console.log(`Dispatch is running at http://${config.host === '0.0.0.0' ? 'localhost' : config.host}:${config.port}`);
   console.log(`Nebius: ${config.nebius.baseUrl} (${config.nebius.apiKey ? 'API key set' : 'no API key — set NEBIUS_API_KEY'})`);
   health.refresh(true).then(snapshot => {
     for (const [name, status] of Object.entries(snapshot)) console.log(`  ${name.padEnd(9)} ${status.state.padEnd(10)} ${status.detail}`);

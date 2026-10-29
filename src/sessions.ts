@@ -1,5 +1,5 @@
 // Discovers conversations that desktop coding CLIs saved on this machine, so they can be
-// listed, read and continued from the browser. Ported from Shed's server/sessions.js.
+// listed, read and continued from the browser. Adapted from server/sessions.js in Shed (MIT).
 import fs from 'node:fs';
 import path from 'node:path';
 import type { Harness } from './models.ts';
@@ -14,7 +14,7 @@ export type Session = {
   currentModel: string;
   updatedAt: string;
   file: string | null;
-  source: 'desktop' | 'shed';
+  source: 'desktop' | 'dispatch';
   liveState: 'working' | 'waiting' | 'history';
 };
 export type DisplayMessage = { role: 'user' | 'assistant' | 'tool'; text: string; at?: string };
