@@ -24,11 +24,26 @@ git clone https://github.com/akashkolte/nebius_hackathon.git
 cd nebius_hackathon && npm install
 ```
 
-### 2. Add your API key
+### 2. Add your API key and password
 
 ```bash
-export NEBIUS_API_KEY=paste-your-key-here
+cp .env.example .env
 ```
+
+Open `.env` in any editor and fill in two lines:
+
+```
+NEBIUS_API_KEY=your-nebius-api-key
+DISPATCH_PASSWORD=a-password-you-choose
+```
+
+The password must be at least 8 characters; you'll sign in with it in step 4. The file also turns on **demo mode** (`DISPATCH_DEMO=1`), which:
+
+- creates a small `sample-app` project with one failing test, in `~/Dispatch Workspaces/`;
+- shows example tasks on the home screen;
+- makes every shell command wait for your approval.
+
+`DISPATCH_CLI=0` keeps any Claude Code or Codex sessions on your computer out of the demo. `.env` stays on your computer: it is never committed.
 
 Optional: check the key and models end to end, about a minute. It lists the models your key can use, asks the router a question, and has the agent write and run a small script in a temporary folder. It ends with `✓ Smoke test passed`.
 
@@ -36,23 +51,17 @@ Optional: check the key and models end to end, about a minute. It lists the mode
 npm run smoke
 ```
 
-### 3. Start Dispatch in demo mode
+### 3. Start Dispatch
 
 ```bash
-DISPATCH_DEMO=1 DISPATCH_CLI=0 npm start
+npm start
 ```
 
-Demo mode does three things:
-
-- it creates a small `sample-app` project with one failing test, in `~/Dispatch Workspaces/`;
-- it shows example tasks on the home screen;
-- it makes every shell command wait for your approval.
-
-`DISPATCH_CLI=0` keeps any Claude Code or Codex sessions on your computer out of the demo.
+It prints `Dispatch is running at http://127.0.0.1:4378` and `nebius ready`. If it says the Nebius key is missing or invalid, check `NEBIUS_API_KEY` in `.env`.
 
 ### 4. Try it
 
-1. Open **http://localhost:4378**, choose a password (8+ characters) and sign in.
+1. Open **http://localhost:4378** and sign in with the password from `.env`.
 2. Tap the example task **Fix the failing test**, then **Start**.
 3. Watch the steps:
    - The Nebius router picks a model.
@@ -72,17 +81,17 @@ Open the `https://….trycloudflare.com` address it prints on your phone, and si
 
 ### Alternative: Docker
 
-No Node.js needed. Run this from the repo folder. The container can't set a password from the browser, so you pass it with `DISPATCH_PASSWORD`:
+No Node.js needed. Create `.env` as in step 2, then run from the repo folder:
 
 ```bash
 docker build -t dispatch .
 ```
 
 ```bash
-docker run --rm -p 4378:4378 -e NEBIUS_API_KEY -e DISPATCH_PASSWORD=choose-a-password dispatch
+docker run --rm -p 4378:4378 --env-file .env dispatch
 ```
 
-Then open http://localhost:4378 and sign in with that password. `-e NEBIUS_API_KEY` passes on the key you exported in step 2.
+Then open http://localhost:4378 and sign in with the password from `.env`.
 
 ### Clean up
 
@@ -120,14 +129,14 @@ npm install
 ```
 
 ```bash
-export NEBIUS_API_KEY=your-key   # NEBIUS_TEMP_API_KEY also works
+cp .env.example .env   # then set NEBIUS_API_KEY (and optionally DISPATCH_PASSWORD) in .env
 ```
 
 ```bash
 npm start
 ```
 
-Open http://localhost:4378, set a password, and type a task. New tasks get their own folder under `~/Dispatch Workspaces` unless you pick a project.
+Open http://localhost:4378 and sign in with `DISPATCH_PASSWORD` (or set a password there if you left it empty). New tasks get their own folder under `~/Dispatch Workspaces` unless you pick a project. The example file turns on demo mode; delete the `DISPATCH_DEMO` and `DISPATCH_CLI` lines from `.env` for everyday use.
 
 Check your key and the models end to end (lists models, asks the router, has the agent write and run a script in a temp folder):
 

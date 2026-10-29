@@ -211,3 +211,21 @@ test('demo mode seeds a sample project, always asks before commands, and caps us
   assert.equal(await reach(second, 'completed'), 'completed');
   await assert.rejects(manager.start({ prompt: 'Third task this hour', harness: 'nebius' }), /2 tasks per hour/);
 });
+
+test('DISPATCH_PASSWORD always wins: changing it replaces the saved password and signs out devices', () => {
+  const dataDir = tmp('data');
+  const env = { DISPATCH_HOME_DIR: tmp('home'), DISPATCH_DATA_DIR: dataDir, DISPATCH_WORKSPACES: tmp('workspaces'), NEBIUS_API_KEY: 'k', DISPATCH_CLI: '0' };
+  const first = createApp(loadConfig(env), { initialPassword: 'first-password' });
+  first.store.settings.devices = [{ id: 'd', keyHash: 'h', name: 'Mac', createdAt: new Date().toISOString(), lastSeenAt: new Date().toISOString() }];
+  first.store.saveSettings();
+  const firstHash = first.store.settings.passwordHash;
+
+  const same = createApp(loadConfig(env), { initialPassword: 'first-password' });
+  assert.equal(same.store.settings.passwordHash, firstHash);
+  assert.equal(same.store.settings.devices?.length, 1);
+
+  const changed = createApp(loadConfig(env), { initialPassword: 'second-password' });
+  assert.notEqual(changed.store.settings.passwordHash, firstHash);
+  assert.deepEqual(changed.store.settings.devices, []);
+  assert.throws(() => createApp(loadConfig(env), { initialPassword: 'short' }), /at least 8 characters/);
+});

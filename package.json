@@ -6,11 +6,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node src/index.ts",
-    "dev": "node --watch src/index.ts",
+    "start": "node --env-file-if-exists=.env src/index.ts",
+    "dev": "node --env-file-if-exists=.env --watch src/index.ts",
     "test": "node --test test/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "smoke": "node scripts/smoke.ts"
+    "smoke": "node --env-file-if-exists=.env scripts/smoke.ts"
   },
   "engines": {
     "node": ">=22.18"
