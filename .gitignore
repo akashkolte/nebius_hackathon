@@ -1,0 +1,4 @@
+node_modules
+.shed-data/
+*.log
+.DS_Store

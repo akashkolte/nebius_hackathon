@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1115">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Shed">
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Shed — coding agents on Nebius</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <!-- Sign-in -->
+  <div id="auth" class="auth hidden">
+    <form id="auth-form" class="auth-card">
+      <img src="/logo.svg" alt="" class="auth-logo">
+      <h1>Shed</h1>
+      <p id="auth-copy">Sign in to message your coding agents.</p>
+      <input id="auth-password" type="password" autocomplete="current-password" placeholder="Password" minlength="8" required>
+      <input id="auth-confirm" class="hidden" type="password" autocomplete="new-password" placeholder="Repeat password" minlength="8">
+      <button class="primary" id="auth-submit" type="submit">Sign in</button>
+      <p class="error" id="auth-error" role="alert"></p>
+    </form>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><img src="/logo.svg" alt=""><div><strong>Shed</strong><small>ROUTED BY NEBIUS</small></div></div>
+      <nav class="nav">
+        <button class="nav-item active" data-view="home">Command center</button>
+        <button class="nav-item" data-view="sessions">Sessions <span class="count" id="session-count">0</span></button>
+        <button class="nav-item" data-view="activity">Activity <span class="count" id="active-count">0</span></button>
+        <button class="nav-item" data-view="settings">Settings</button>
+      </nav>
+      <div class="side-heading">Harnesses</div>
+      <div id="harness-list" class="harness-list"></div>
+      <div class="side-heading">Router</div>
+      <div id="router-status" class="router-status"></div>
+      <div class="spacer"></div>
+      <button class="ghost" id="logout">Sign out</button>
+    </aside>
+    <div class="scrim hidden" id="scrim"></div>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-button menu" id="menu" aria-label="Open menu">☰</button>
+        <h2 id="page-title">Command center</h2>
+        <span class="live" id="live-dot" title="Live updates">● LIVE</span>
+      </header>
+
+      <section class="view" id="view-home">
+        <div id="attention"></div>
+        <div class="composer card">
+          <div class="composer-head"><span class="spark">✦</span> New task <span class="hint">Ctrl/⌘ + Enter</span></div>
+          <textarea id="prompt" rows="4" placeholder="What should an agent work on? e.g. “Add a /health endpoint to my Express app and a test for it”"></textarea>
+          <div id="workspace-row" class="row hidden"><label>New workspace name <input id="workspace-name" maxlength="60" placeholder="e.g. todo-api"></label></div>
+          <div class="controls">
+            <label>Harness<select id="harness"></select></label>
+            <label>Model<select id="model"></select></label>
+            <label>Session<select id="session-mode"><option value="auto">✦ Nebius decides</option><option value="new">Always new</option></select></label>
+            <label>Project<select id="project"></select></label>
+            <label class="check" title="Run shell commands without asking first. Files inside the project are always editable."><input type="checkbox" id="skip"> Skip permissions</label>
+            <button class="primary" id="start">Start ↗</button>
+          </div>
+          <div id="preview" class="preview hidden"></div>
+          <div id="feedback" class="feedback hidden" role="status"></div>
+        </div>
+        <div class="section-head"><h3>Live tasks</h3></div>
+        <div id="live-tasks" class="list"></div>
+        <div class="section-head"><h3>Pick up where you left off</h3><button class="link" data-goto="sessions">All sessions ↗</button></div>
+        <div id="recent-sessions" class="list"></div>
+      </section>
+
+      <section class="view hidden" id="view-sessions">
+        <div class="filters">
+          <input id="session-search" type="search" placeholder="Search sessions">
+          <select id="session-filter"><option value="">All harnesses</option></select>
+        </div>
+        <div id="all-sessions" class="list"></div>
+      </section>
+
+      <section class="view hidden" id="view-activity">
+        <div id="all-tasks" class="list"></div>
+      </section>
+
+      <section class="view hidden" id="view-settings">
+        <div class="card">
+          <h3>Nebius Token Factory</h3>
+          <p class="muted" id="nebius-info"></p>
+          <div class="controls">
+            <label class="grow">Router model<input id="router-model" list="served-models" placeholder="Automatic"></label>
+            <datalist id="served-models"></datalist>
+            <button id="save-router">Save</button>
+            <button id="test-nebius">Test connection</button>
+          </div>
+          <p id="nebius-result" class="muted"></p>
+        </div>
+        <div class="card">
+          <div class="section-head"><h3>Harness health</h3><button id="refresh-health">Check now</button></div>
+          <div id="health-table"></div>
+        </div>
+        <div class="card">
+          <div class="section-head"><h3>Models by harness</h3><select id="models-harness"></select></div>
+          <p class="muted">The Nebius router picks among enabled models for each task. Model IDs must match what the harness accepts.</p>
+          <div id="models-table"></div>
+          <div class="controls">
+            <button id="add-model">+ Add model</button>
+            <label>Default<select id="default-model"></select></label>
+            <button class="primary" id="save-models">Save models</button>
+          </div>
+          <p id="models-result" class="muted"></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Session drawer -->
+    <aside class="drawer hidden" id="drawer" aria-label="Session">
+      <header class="drawer-head">
+        <div><div class="eyebrow" id="drawer-meta"></div><h3 id="drawer-title"></h3><div class="muted small" id="drawer-cwd"></div></div>
+        <button class="icon-button" id="drawer-close" aria-label="Close">×</button>
+      </header>
+      <div class="tabs">
+        <button class="tab active" data-tab="conversation">Conversation</button>
+        <button class="tab" data-tab="activity">Activity</button>
+        <button class="tab" data-tab="changes">Changes</button>
+      </div>
+      <div class="drawer-body">
+        <div id="drawer-approval"></div>
+        <div id="tab-conversation" class="tab-panel"></div>
+        <div id="tab-activity" class="tab-panel hidden"></div>
+        <div id="tab-changes" class="tab-panel hidden"></div>
+      </div>
+      <footer class="drawer-foot">
+        <textarea id="followup" rows="2" placeholder="Send a follow-up…"></textarea>
+        <div class="controls">
+          <label>Route<select id="followup-route"></select></label>
+          <label>Model<select id="followup-model"></select></label>
+          <label class="check"><input type="checkbox" id="followup-skip"> Skip permissions</label>
+          <button class="danger hidden" id="cancel-task">Stop</button>
+          <button class="primary" id="followup-send">Send ↗</button>
+        </div>
+        <div id="followup-feedback" class="feedback hidden" role="status"></div>
+      </footer>
+    </aside>
+  </div>
+</body>
+</html>
