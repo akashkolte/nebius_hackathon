@@ -4,14 +4,89 @@
 
 Built for the Nebius × NVIDIA hackathon. Routing and coding both run on open models served by **Nebius Token Factory**, so it works on any machine with no desktop agent installed.
 
-## Try the live demo (judges)
+## Try it yourself (judges, about 5 minutes)
 
-- **URL:** `https://YOUR-DEMO-URL` (replace before submitting)
-- **Password:** `YOUR-JUDGE-PASSWORD` (replace before submitting)
+You run Dispatch on your own computer with your own Nebius API key. Then you send it coding tasks from a browser, or from your phone.
 
-Open the URL on your phone or laptop, sign in, and tap one of the example tasks, for example **Fix the failing test**. The Nebius router picks a model, the NVIDIA Nemotron agent reads the project, and every shell command waits for you to tap **Approve**. Open the task to watch each step, then send a follow-up in the same session.
+### What you need
 
-The demo runs in an isolated container on a Nebius VM. It holds only throwaway projects, and is capped at a few tasks per hour.
+- **macOS or Linux.** On Windows, use WSL or the Docker option below.
+- **Node.js 22.18 or later** (`node --version`), **git** and **Python 3** (the sample project's tests use it).
+- **A Nebius Token Factory API key.** Create one in the Nebius Token Factory console. One task typically uses a few thousand tokens.
+
+### 1. Get the code and install
+
+```bash
+git clone https://github.com/akashkolte/nebius_hackathon.git
+```
+
+```bash
+cd nebius_hackathon && npm install
+```
+
+### 2. Add your API key
+
+```bash
+export NEBIUS_API_KEY=paste-your-key-here
+```
+
+Optional: check the key and models end to end, about a minute. It lists the models your key can use, asks the router a question, and has the agent write and run a small script in a temporary folder. It ends with `✓ Smoke test passed`.
+
+```bash
+npm run smoke
+```
+
+### 3. Start Dispatch in demo mode
+
+```bash
+DISPATCH_DEMO=1 DISPATCH_CLI=0 npm start
+```
+
+Demo mode does three things:
+
+- it creates a small `sample-app` project with one failing test, in `~/Dispatch Workspaces/`;
+- it shows example tasks on the home screen;
+- it makes every shell command wait for your approval.
+
+`DISPATCH_CLI=0` keeps any Claude Code or Codex sessions on your computer out of the demo.
+
+### 4. Try it
+
+1. Open **http://localhost:4378**, choose a password (8+ characters) and sign in.
+2. Tap the example task **Fix the failing test**, then **Start**.
+3. Watch the steps:
+   - The Nebius router picks a model.
+   - The NVIDIA Nemotron agent reads the code and edits the bug.
+   - The agent asks to run the tests; tap **Approve**.
+4. When it's done, check the **Activity** tab (route, model, token use) and the **Changes** tab, or send a follow-up such as _"Now add a test for complete()"_. Settings → **Test connection** shows the Nebius endpoint and the router model.
+
+### 5. Optional: use it from your phone
+
+In a second terminal, put an HTTPS tunnel in front of Dispatch (needs [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)):
+
+```bash
+cloudflared tunnel --url http://localhost:4378
+```
+
+Open the `https://….trycloudflare.com` address it prints on your phone, and sign in with the same password.
+
+### Alternative: Docker
+
+No Node.js needed. Run this from the repo folder. The container can't set a password from the browser, so you pass it with `DISPATCH_PASSWORD`:
+
+```bash
+docker build -t dispatch .
+```
+
+```bash
+docker run --rm -p 4378:4378 -e NEBIUS_API_KEY -e DISPATCH_PASSWORD=choose-a-password dispatch
+```
+
+Then open http://localhost:4378 and sign in with that password. `-e NEBIUS_API_KEY` passes on the key you exported in step 2.
+
+### Clean up
+
+Stop Dispatch with Ctrl+C, then delete the `~/Dispatch Workspaces` folder and the repo folder.
 
 ## What it does
 
@@ -90,9 +165,9 @@ Then open the tunnel's address on your phone and sign in. The first password can
 
 At startup and every minute Dispatch calls `GET /v1/models`. Roster models Nebius does not serve are switched off automatically, and the router model is picked from what is actually served. Both are editable in **Settings**, which also has a **Test connection** button.
 
-## Host a public demo
+## Host a public demo (optional)
 
-[docs/DEPLOY.md](docs/DEPLOY.md) puts Dispatch on a Nebius VM with HTTPS in about ten minutes using Docker Compose. Visitors only reach a container on that VM, never your own computer.
+[docs/DEPLOY.md](docs/DEPLOY.md) puts Dispatch on a server, for example a Nebius VM, with HTTPS using Docker Compose. Visitors only reach a container on that server.
 
 ## Security
 
