@@ -1,0 +1,10 @@
+{
+  "name": "Dispatch",
+  "short_name": "Dispatch",
+  "description": "Message your coding agents from your phone. Routed and powered by Nebius.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1115",
+  "theme_color": "#0f1115",
+  "icons": [{ "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
