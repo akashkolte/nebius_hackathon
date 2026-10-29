@@ -104,6 +104,7 @@ test('the roster is reconciled with the models Nebius serves', () => {
 test('router model selection honours config, then preference, then what is served', () => {
   assert.equal(pickRouterModel('my/router', ['x'], nebiusRoster), 'my/router');
   assert.equal(pickRouterModel('', ['moonshotai/Kimi-K2-Instruct', 'zzz'], nebiusRoster), 'moonshotai/Kimi-K2-Instruct');
+  assert.equal(pickRouterModel('', ['Qwen/Qwen3-235B-A22B-Instruct-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507'], nebiusRoster), 'Qwen/Qwen3-30B-A3B-Instruct-2507');
   assert.equal(pickRouterModel('', ['only/model'], nebiusRoster), 'only/model');
 });
 

@@ -44,3 +44,12 @@ test('the client retries rate limits and reports API errors clearly', async () =
     await assert.rejects(new NebiusClient({ baseUrl: mock.url, apiKey: '' }).listModels(), /No Nebius API key/);
   } finally { await mock.close(); }
 });
+
+test('an exhausted budget says how to fix it and is not retried', async () => {
+  const mock = await startMockNebius({ agent: () => ({ status: 402, body: { detail: 'Payment Required: You have exhausted your budget.' } }) });
+  try {
+    const client = new NebiusClient({ baseUrl: mock.url, apiKey: 'test-key', retries: 3 });
+    await assert.rejects(client.chat({ model: 'm', messages: [{ role: 'user', content: 'hi' }] }), /402: Payment Required.*Add credits to your Nebius Token Factory account/);
+    assert.equal(mock.requests.length, 1);
+  } finally { await mock.close(); }
+});

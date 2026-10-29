@@ -34,6 +34,7 @@ export const nebiusRoster: ModelEntry[] = [
 export const routerPreference = [
   'meta-llama/Llama-3.3-70B-Instruct',
   'meta-llama/Llama-3.3-70B-Instruct-fast',
+  'Qwen/Qwen3-30B-A3B-Instruct-2507',
   'Qwen/Qwen3-235B-A22B-Instruct-2507',
   'nvidia/Llama-3_3-Nemotron-Super-49B-v1_5',
   'moonshotai/Kimi-K2-Instruct',

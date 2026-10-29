@@ -16,7 +16,7 @@ const client = new NebiusClient({ baseUrl: config.nebius.baseUrl, apiKey: config
 
 console.log(`1. Listing models at ${config.nebius.baseUrl}`);
 const served = await client.listModels();
-console.log(`   ${served.length} models served`);
+console.log(`   ${served.length} models served: ${served.join(', ')}`);
 const roster = reconcileRoster(defaultModelConfig('nebius'), served);
 for (const model of roster.models) console.log(`   ${model.enabled ? '✓' : '✗'} ${model.id}`);
 const routerModel = pickRouterModel(config.nebius.routerModel, served, nebiusRoster);

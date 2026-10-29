@@ -77,7 +77,8 @@ export class NebiusClient {
       }
       let detail = text;
       try { const parsed = JSON.parse(text); detail = parsed.error?.message || parsed.detail || parsed.message || text; } catch {}
-      throw new NebiusError(`Nebius returned ${response.status}: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`, response.status);
+      const hint = response.status === 402 ? ' Add credits to your Nebius Token Factory account, then try again.' : '';
+      throw new NebiusError(`Nebius returned ${response.status}: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}${hint}`, response.status);
     }
   }
 
