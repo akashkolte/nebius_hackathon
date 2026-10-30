@@ -183,3 +183,49 @@ test('when Nebius is unreachable, routing falls back locally and the task fails 
   assert.equal(task.status, 'failed');
   assert.match(task.error, /Could not reach Nebius/);
 });
+
+test('demo mode seeds a sample project, always asks before commands, and caps usage', async t => {
+  let agent: Handler = () => ({ content: 'ok' });
+  const mock = await startMockNebius({ models: ['nvidia/Nemotron-3-Ultra-550b-a55b'], agent: (request, index) => agent(request, index) });
+  const config = loadConfig({ DISPATCH_HOME_DIR: tmp('home'), DISPATCH_DATA_DIR: tmp('data'), DISPATCH_WORKSPACES: tmp('workspaces'), NEBIUS_BASE_URL: mock.url, NEBIUS_API_KEY: 'test-key', DISPATCH_CLI: '0', DISPATCH_DEMO: '1', DISPATCH_MAX_CONCURRENT: '1', DISPATCH_MAX_TASKS_PER_HOUR: '2' });
+  const { server, manager, health } = createApp(config, { initialPassword: '' });
+  t.after(async () => { await new Promise(resolve => server.close(resolve)); await mock.close(); });
+  await health.refresh(true);
+  const reach = async (task: { status: string }, status: string) => { for (let i = 0; i < 100 && task.status !== status; i++) await sleep(20); return task.status; };
+
+  const sample = path.join(config.workspaceRoot, 'sample-app');
+  assert.ok(fs.existsSync(path.join(sample, 'test_todo.py')));
+  assert.ok(manager.projects().includes(sample));
+
+  // Asking to skip permissions is ignored: the command still waits for approval.
+  agent = (_, index) => index === 0 ? { tool_calls: [{ name: 'run_command', arguments: { command: 'ls' } }] } : { content: 'Listed the files.' };
+  const task = await manager.start({ prompt: 'List the files in this project', cwd: sample, harness: 'nebius', skipPermissions: true });
+  assert.equal(task.skipPermissions, false);
+  assert.equal(await reach(task, 'waiting'), 'waiting');
+  await assert.rejects(manager.start({ prompt: 'Another task at the same time', harness: 'nebius' }), /at most 1 task at once/);
+  manager.respond(task.id, true);
+  assert.equal(await reach(task, 'completed'), 'completed');
+
+  agent = () => ({ content: 'done' });
+  const second = await manager.start({ prompt: 'Second task this hour', harness: 'nebius' });
+  assert.equal(await reach(second, 'completed'), 'completed');
+  await assert.rejects(manager.start({ prompt: 'Third task this hour', harness: 'nebius' }), /2 tasks per hour/);
+});
+
+test('DISPATCH_PASSWORD always wins: changing it replaces the saved password and signs out devices', () => {
+  const dataDir = tmp('data');
+  const env = { DISPATCH_HOME_DIR: tmp('home'), DISPATCH_DATA_DIR: dataDir, DISPATCH_WORKSPACES: tmp('workspaces'), NEBIUS_API_KEY: 'k', DISPATCH_CLI: '0' };
+  const first = createApp(loadConfig(env), { initialPassword: 'first-password' });
+  first.store.settings.devices = [{ id: 'd', keyHash: 'h', name: 'Mac', createdAt: new Date().toISOString(), lastSeenAt: new Date().toISOString() }];
+  first.store.saveSettings();
+  const firstHash = first.store.settings.passwordHash;
+
+  const same = createApp(loadConfig(env), { initialPassword: 'first-password' });
+  assert.equal(same.store.settings.passwordHash, firstHash);
+  assert.equal(same.store.settings.devices?.length, 1);
+
+  const changed = createApp(loadConfig(env), { initialPassword: 'second-password' });
+  assert.notEqual(changed.store.settings.passwordHash, firstHash);
+  assert.deepEqual(changed.store.settings.devices, []);
+  assert.throws(() => createApp(loadConfig(env), { initialPassword: 'short' }), /at least 8 characters/);
+});

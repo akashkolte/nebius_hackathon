@@ -103,7 +103,7 @@ export function createApp(config: Config, options: { fetchImpl?: typeof fetch; i
     if (!auth.device(req)) return send(res, 401, { error: 'Sign in first.' });
 
     if (pathname === '/api/me' && method === 'GET') {
-      return send(res, 200, { hostname: os.hostname(), routerModel: manager.routerModel(), nebiusBaseUrl: config.nebius.baseUrl, workspaceRoot: config.workspaceRoot, harnesses: health.snapshot, labels: harnessLabels, projects: manager.projects() });
+      return send(res, 200, { hostname: os.hostname(), routerModel: manager.routerModel(), nebiusBaseUrl: config.nebius.baseUrl, workspaceRoot: config.workspaceRoot, harnesses: health.snapshot, labels: harnessLabels, projects: manager.projects(), demo: { enabled: config.demo.enabled, maxTasksPerHour: config.demo.maxTasksPerHour } });
     }
     if (pathname === '/api/harness-health' && method === 'GET') return send(res, 200, { harnesses: await health.refresh(url.searchParams.get('force') === '1') });
     if (pathname === '/api/projects' && method === 'GET') return send(res, 200, { projects: manager.projects() });

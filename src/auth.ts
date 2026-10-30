@@ -43,9 +43,11 @@ export class Auth {
 
   constructor(store: Store, initialPassword = '') {
     this.store = store;
-    if (initialPassword && !this.configured) {
+    // DISPATCH_PASSWORD is the source of truth: changing it replaces the saved password and signs out old devices.
+    if (initialPassword && !verifyPassword(initialPassword, store.settings.passwordHash)) {
       if (initialPassword.length < 8) throw new Error('DISPATCH_PASSWORD must be at least 8 characters.');
       store.settings.passwordHash = hashPassword(initialPassword);
+      store.settings.devices = [];
       store.saveSettings();
     }
   }

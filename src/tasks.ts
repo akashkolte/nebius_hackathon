@@ -5,7 +5,7 @@ import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import type { Config } from './config.ts';
+import { rootDir, type Config } from './config.ts';
 import type { NebiusClient } from './nebius.ts';
 import { Brain, decideFollowup, type ModelDecision, type RouteDecision } from './brain.ts';
 import { harnessLabels, isHarness, modelConfig, nebiusRoster, pickRouterModel, reconcileRoster, type Harness, type ModelConfig } from './models.ts';
@@ -52,6 +52,20 @@ export class TaskManager extends EventEmitter {
     this.health = deps.health;
     this.brain = new Brain(this.client, () => this.routerModel());
     fs.mkdirSync(this.config.workspaceRoot, { recursive: true });
+    if (this.config.demo.enabled) this.seedDemoWorkspace();
+  }
+
+  // A demo instance starts with a small project that has a failing test, so visitors have something to try.
+  seedDemoWorkspace() {
+    const target = path.join(this.config.workspaceRoot, 'sample-app');
+    if (!fs.existsSync(target)) fs.cpSync(path.join(rootDir, 'demo', 'sample-app'), target, { recursive: true });
+  }
+
+  checkDemoLimits() {
+    const { maxConcurrent, maxTasksPerHour } = this.config.demo;
+    if (this.running.size >= maxConcurrent) throw httpError(`This demo runs at most ${maxConcurrent} task${maxConcurrent === 1 ? '' : 's'} at once. Try again when one finishes.`, 429);
+    const lastHour = this.store.tasks.filter(t => Date.now() - Date.parse(t.createdAt) < 3600_000).length;
+    if (lastHour >= maxTasksPerHour) throw httpError(`This demo allows ${maxTasksPerHour} tasks per hour. Please try again later.`, 429);
   }
 
   // ---- Models -------------------------------------------------------------------------------
@@ -176,6 +190,10 @@ export class TaskManager extends EventEmitter {
   // ---- Running ------------------------------------------------------------------------------
 
   async start(input: TaskInput): Promise<Task> {
+    if (this.config.demo.enabled) {
+      this.checkDemoLimits();
+      input = { ...input, skipPermissions: false };
+    }
     const plan = await this.plan(input);
     const { route, model, cwd } = plan;
     const harness = route.session?.harness || route.harness;

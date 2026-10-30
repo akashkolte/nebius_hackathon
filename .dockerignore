@@ -1,0 +1,8 @@
+node_modules
+.git
+.dispatch-data
+.shed-data
+.env
+test
+scripts
+*.log
