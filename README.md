@@ -1,8 +1,24 @@
 # Dispatch on Nebius
 
-**Message your coding agents from your phone. A Nebius-hosted router agent decides where each request goes, and a built-in Nebius coding agent does the work.**
+**A remote control for AI coding agents.** Send coding tasks from your phone, and Dispatch runs them on your computer with whichever agent fits best. A router on **Nebius Token Factory** makes that choice, and **NVIDIA Nemotron** does the harder work.
 
-Built for the Nebius × NVIDIA hackathon. Routing and coding both run on open models served by **Nebius Token Factory**, so it works on any machine with no desktop agent installed.
+Built for the Nebius × NVIDIA hackathon.
+
+## What it does
+
+1. **You send a task** from your phone or browser, e.g. _"Fix the failing test"_.
+2. **A router on Nebius decides where it goes:**
+   - whether the task continues an existing conversation or starts a new one;
+   - which agent and model should do it: a fast model for small edits, a stronger one like **NVIDIA Nemotron** for harder work.
+3. **An agent does the work**, reading and editing files and running tests in your project. It is either:
+   - the built-in **Nebius coding agent**, or
+   - **Claude Code, Codex or Gemini**, if they're installed on your computer.
+4. **You stay in control:** you watch each step live, approve commands from your phone, send follow-ups, or stop it.
+5. **Handoff:** you can move a conversation from one agent to another with its context, for example from Claude to the Nebius agent when you hit Claude's usage limit.
+
+**How it's different from a single agent's phone app:** those drive one agent. Dispatch is one inbox for several agents, it works with the sessions and projects already on your computer, and a Nebius model picks the right agent and model for each task.
+
+**Built with:** TypeScript on Node.js. Both the router and the coding agent run on open models served by Nebius Token Factory.
 
 ## Try it yourself (judges, about 5 minutes)
 
@@ -90,7 +106,7 @@ npm run smoke
 
 If Dispatch says the Nebius key is missing or invalid, check `NEBIUS_API_KEY` in `.env` and start it again.
 
-## What it does
+## How it works
 
 1. **You send a task** from a browser or phone: _"Add a /health endpoint and a test for it."_
 2. **The router agent** (a fast model on Nebius, e.g. Qwen3 30B) decides:
