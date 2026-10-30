@@ -75,7 +75,11 @@ export function createApp(config: Config, options: { fetchImpl?: typeof fetch; i
   }
 
   // Cross-site form posts must not drive the agents; browsers always send Origin on such requests.
+  // Browsers say where a request came from in Sec-Fetch-Site, which a proxy (a tunnel, Codespaces port
+  // forwarding) cannot rewrite; Origin vs Host is the fallback for clients that do not send it.
   function sameOrigin(req: http.IncomingMessage): boolean {
+    const site = req.headers['sec-fetch-site'];
+    if (site) return site === 'same-origin' || site === 'none';
     const origin = req.headers.origin;
     if (!origin) return true;
     try { return new URL(origin).host === (req.headers['x-forwarded-host'] || req.headers.host); } catch { return false; }

@@ -64,6 +64,10 @@ test('a task goes from the phone through the Nebius router to the Nebius agent a
   const wrong = await fetch(`${base}/api/auth`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: 'nope nope' }) });
   assert.equal(wrong.status, 401);
   assert.equal((await call('/api/tasks', { prompt: 'x' }, { origin: 'https://evil.example' })).status, 403);
+  assert.equal((await call('/api/tasks', { prompt: 'x' }, { 'sec-fetch-site': 'cross-site' })).status, 403);
+  // Behind a proxy that rewrites Host (Codespaces port forwarding), the browser's same-origin signal still counts.
+  assert.equal((await call('/api/logout', {}, { origin: 'https://abc-4378.app.github.dev', 'sec-fetch-site': 'same-origin' })).status, 200);
+  cookie = (await call('/api/auth', { password: 'correct horse' })).setCookie.split(';')[0];
 
   // Health reaches Nebius and lists the served models.
   const health = await call('/api/harness-health?force=1');

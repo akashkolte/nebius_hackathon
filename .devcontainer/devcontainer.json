@@ -1,0 +1,35 @@
+{
+  "name": "Dispatch on Nebius",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "secrets": {
+    "NEBIUS_API_KEY": {
+      "description": "Your Nebius Token Factory API key. Dispatch's router and coding agent run on Nebius models."
+    },
+    "DISPATCH_PASSWORD": {
+      "description": "A password you choose (8+ characters) to sign in to Dispatch. Leave empty and one is generated for you."
+    }
+  },
+  "containerEnv": {
+    "DISPATCH_DEMO": "1",
+    "DISPATCH_CLI": "0",
+    "NODE_OPTIONS": "--experimental-strip-types --disable-warning=ExperimentalWarning"
+  },
+  "forwardPorts": [
+    4378
+  ],
+  "portsAttributes": {
+    "4378": {
+      "label": "Dispatch",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "postCreateCommand": "npm ci && (command -v python3 >/dev/null || (sudo apt-get update && sudo apt-get install -y python3))",
+  "postAttachCommand": "bash .devcontainer/start.sh",
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "README.md"
+      ]
+    }
+  }
+}

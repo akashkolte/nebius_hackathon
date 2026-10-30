@@ -22,11 +22,31 @@ Built for the Nebius × NVIDIA hackathon.
 
 ## Try it yourself (judges, about 5 minutes)
 
-You run Dispatch on your own computer with your own Nebius API key. Then you send it coding tasks from a browser, or from your phone.
+You need your own **Nebius Token Factory API key**; create one in the Nebius Token Factory console. One task typically uses a few thousand tokens. Pick one way to run Dispatch.
 
-### One-time setup
+### Fastest: GitHub Codespaces (nothing to install)
 
-You need a **Nebius Token Factory API key** (create one in the Nebius Token Factory console; one task typically uses a few thousand tokens) and **git**.
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/akashkolte/nebius_hackathon?quickstart=1)
+
+1. Click the button. Sign in to GitHub if asked. It runs on your account's free monthly Codespaces hours.
+2. GitHub asks for two values before creating the codespace:
+   - `NEBIUS_API_KEY`: your key;
+   - `DISPATCH_PASSWORD`: a password you choose. If you leave it empty, one is generated and printed in the terminal.
+3. Wait a minute or two for setup. Dispatch starts by itself in demo mode, and the **Ports** tab shows port **4378 (Dispatch)**. Open its address (the globe icon), sign in with your password, and go to [What to try](#what-to-try).
+
+If the terminal says no API key was found, run this in the codespace terminal:
+
+```bash
+export NEBIUS_API_KEY=your-key && bash .devcontainer/start.sh
+```
+
+**From your phone:** in the Ports tab, right-click port 4378, choose **Port Visibility → Public**, and open the same address on your phone. Dispatch's password still protects it.
+
+When you're done, delete the codespace from [github.com/codespaces](https://github.com/codespaces) so it stops using your hours.
+
+### Or run it on your own computer: one-time setup
+
+You need **git**.
 
 ```bash
 git clone https://github.com/akashkolte/nebius_hackathon.git && cd nebius_hackathon
@@ -49,7 +69,7 @@ DISPATCH_PASSWORD=a-password-you-choose
 - shows example tasks on the home screen;
 - makes every shell command wait for your approval.
 
-### Option A: Docker (recommended, 2 commands)
+### Option A: Docker (2 commands)
 
 Needs [Docker Desktop](https://www.docker.com/products/docker-desktop/) (macOS, Windows or Linux), and nothing else.
 
@@ -225,6 +245,7 @@ This project is licensed under the Apache License 2.0 License. See [LICENSE](LIC
 
 Stop Dispatch with Ctrl+C. Then:
 
+- **Codespaces:** delete the codespace at [github.com/codespaces](https://github.com/codespaces). Nothing was installed on your computer.
 - **Docker:** remove the image with `docker rmi dispatch`. The container's files were already deleted when it stopped.
 - **Node.js:** delete the `~/Dispatch Workspaces` folder.
 
